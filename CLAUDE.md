@@ -8,7 +8,7 @@ AI Learning Tracker - A Next.js 15.4.2 application for documenting and sharing r
 
 ## Common Commands
 
-- `npm run dev` - Start development server on http://localhost:3000
+- `npm run dev` - Start development server on http://localhost:8000
 - `npm run build` - Build production bundle
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint for code linting
