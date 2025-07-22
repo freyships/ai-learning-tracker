@@ -2,9 +2,22 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Resource, LearningProgress } from '@/types';
+import { LearningProgress } from '@/types';
 
-const sampleResources: Resource[] = [
+interface LegacyResource {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  category: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  addedBy: string;
+  dateAdded: Date;
+  rating: number;
+}
+
+const sampleResources: LegacyResource[] = [
   {
     id: '1',
     title: 'Claude.ai Documentation',
@@ -67,7 +80,7 @@ const sampleProgress: LearningProgress[] = [
 ];
 
 function ProgressCard({ resource, progress, onUpdateProgress }: { 
-  resource: Resource; 
+  resource: LegacyResource; 
   progress: LearningProgress;
   onUpdateProgress: (resourceId: string, newProgress: Partial<LearningProgress>) => void;
 }) {

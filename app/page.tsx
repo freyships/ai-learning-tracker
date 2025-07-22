@@ -1,15 +1,17 @@
-import Link from "next/link";
-import { Resource } from "@/types";
+'use client';
 
-const sampleResources: Resource[] = [
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+
+const sampleResources = [
   {
     id: '1',
     title: 'Claude.ai Documentation',
     description: 'Official documentation for using Claude AI for coding assistance',
     url: 'https://docs.anthropic.com/claude',
-    category: 'documentation',
+    category: 'documentation' as const,
     tags: ['claude', 'ai', 'documentation'],
-    difficulty: 'beginner',
+    difficulty: 'beginner' as const,
     addedBy: 'System',
     dateAdded: new Date('2024-01-15'),
     rating: 5,
@@ -19,9 +21,9 @@ const sampleResources: Resource[] = [
     title: 'Cursor IDE Tutorial',
     description: 'Complete guide to using Cursor for AI-powered development',
     url: 'https://cursor.com/docs',
-    category: 'tutorial',
+    category: 'tutorial' as const,
     tags: ['cursor', 'ide', 'ai-coding'],
-    difficulty: 'intermediate',
+    difficulty: 'intermediate' as const,
     addedBy: 'System',
     dateAdded: new Date('2024-01-10'),
     rating: 4,
@@ -31,16 +33,29 @@ const sampleResources: Resource[] = [
     title: 'GitHub Copilot Best Practices',
     description: 'Tips and tricks for getting the most out of GitHub Copilot',
     url: 'https://docs.github.com/copilot',
-    category: 'article',
+    category: 'article' as const,
     tags: ['github-copilot', 'ai', 'productivity'],
-    difficulty: 'intermediate',
+    difficulty: 'intermediate' as const,
     addedBy: 'System',
     dateAdded: new Date('2024-01-05'),
     rating: 4,
   }
 ];
 
-function ResourceCard({ resource }: { resource: Resource }) {
+interface LegacyResource {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  category: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  addedBy: string;
+  dateAdded: Date;
+  rating: number;
+}
+
+function ResourceCard({ resource }: { resource: LegacyResource }) {
   const difficultyColors = {
     beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -88,30 +103,75 @@ function ResourceCard({ resource }: { resource: Resource }) {
 }
 
 export default function Home() {
+  const { user, loading } = useAuth();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            AI Learning Tracker
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Discover, track, and share resources for learning to code with AI
-          </p>
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                AI Learning Tracker
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300">
+                Discover, track, and share resources for learning to code with AI
+              </p>
+            </div>
+            
+            {/* Auth Navigation */}
+            <div className="flex gap-3">
+              {loading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              ) : user ? (
+                <div className="flex gap-3">
+                  <Link
+                    href="/dashboard"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/learnings/new"
+                    className="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Add Learning
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Link
+                    href="/login"
+                    className="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
           
           <div className="flex gap-4">
             <Link 
               href="/add-resource"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              Add Resource
+              Browse Resources
             </Link>
-            <Link 
-              href="/my-progress"
-              className="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              My Progress
-            </Link>
+            {user && (
+              <Link 
+                href="/my-progress"
+                className="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                My Progress
+              </Link>
+            )}
           </div>
         </header>
 
